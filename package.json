@@ -7,7 +7,7 @@
     "test": "jest",
     "prepare": "husky",
     "pretty": "prettier --write .",
-    "build": "esbuild src/index.js --bundle --minify --platform=node --legal-comments=none --outfile=dist/bundle.js"
+    "build": "esbuild src/index.js --bundle --platform=node --legal-comments=none --outfile=dist/bundle.js"
   },
   "repository": {
     "type": "git",
