@@ -35601,6 +35601,8 @@ var require_fileFilter = __commonJS({
       core2.debug(`Include patterns: ${includePatterns.join(", ")}`);
       core2.debug(`Exclude patterns: ${excludePatterns.join(", ")}`);
       const filteredFiles = files.filter((file) => {
+        core2.debug(`Analyzing file: ${file.filename}`);
+        core2.debug(JSON.stringify(file, null, 2));
         const shouldAnalyze = matchesPatterns(file.filename, includePatterns, excludePatterns) && hasSignificantChanges(file);
         if (!shouldAnalyze) {
           core2.debug(`Skipping ${file.filename}`);
