@@ -79,7 +79,7 @@ ${analysis}
 async function analyzeFile(anthropic, file, options = {}) {
   const {
     analysisLevel = 'standard',
-    model = 'claude-3-haiku-20240307',
+    model = 'claude-3-5-haiku-20241022',
     maxTokens = 1024,
     commentThreshold = 0.7,
   } = options;
