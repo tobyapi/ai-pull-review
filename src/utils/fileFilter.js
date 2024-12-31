@@ -59,6 +59,8 @@ function filterFiles(files, options) {
 
   const filteredFiles = files
     .filter((file) => {
+      core.debug(`Analyzing file: ${file.filename}`);
+      core.debug(JSON.stringify(file, null, 2));
       const shouldAnalyze =
         matchesPatterns(file.filename, includePatterns, excludePatterns) && hasSignificantChanges(file);
 
