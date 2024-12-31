@@ -100,7 +100,7 @@ See the [README.md](./README.md) for detailed installation and usage instruction
 - Requires an Anthropic API key
 - Uses Claude 3 Haiku by default") \
     --draft \
-    dist/index.js
+    dist/bundle.js
 
 echo "Draft release v$NEW_VERSION created!"
 echo "Please:"
