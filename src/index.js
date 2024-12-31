@@ -7,6 +7,7 @@ async function run() {
     // Get inputs from action.yml
     const anthropicApiKey = core.getInput('anthropic_api_key', { required: true });
     const githubToken = core.getInput('github_token', { required: true });
+    const model = core.getInput('model', { required: true });
 
     // Initialize Anthropic client
     const anthropic = new Anthropic({
@@ -33,10 +34,26 @@ async function run() {
       pull_number: prNumber,
     });
 
-    // Filter relevant files for analysis
-    const relevantFiles = files.filter((file) => {
-      // TODO: Add logic to filter files based on extensions/paths
-      return true;
+    // Get filter patterns from inputs
+    const filePatterns = core
+      .getInput('file_patterns')
+      .split(',')
+      .map((pattern) => pattern.trim())
+      .filter(Boolean);
+
+    const excludePatterns = core
+      .getInput('exclude_patterns')
+      .split(',')
+      .map((pattern) => pattern.trim())
+      .filter(Boolean);
+
+    const maxFiles = parseInt(core.getInput('max_files'), 10);
+
+    // Filter files using our utility
+    const relevantFiles = filterFiles(files, {
+      includePatterns: filePatterns,
+      excludePatterns: excludePatterns,
+      maxFiles,
     });
 
     // Analyze each file
@@ -54,7 +71,7 @@ async function run() {
 
         // Analyze with Claude
         const analysis = await anthropic.messages.create({
-          model: 'claude-3-haiku-20240307',
+          model: model,
           max_tokens: 1024,
           messages: [
             {
