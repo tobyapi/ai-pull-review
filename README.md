@@ -19,17 +19,20 @@ This GitHub Action integrates with Anthropic's AI to perform automated analysis 
 ## Development Roadmap
 
 1. Initial Setup
+
    - Create GitHub Action boilerplate
    - Set up development environment
    - Implement basic GitHub Action workflow
 
 2. Core Functionality
+
    - Implement PR content extraction
    - Set up Anthropic API integration
    - Develop core analysis logic
    - Create feedback formatting system
 
 3. Advanced Features
+
    - Implement customizable analysis rules
    - Add support for multiple programming languages
    - Create detailed reporting system
