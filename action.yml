@@ -1,0 +1,44 @@
+name: 'AI Pull Request Analysis'
+description: 'Analyzes pull requests using Anthropic Claude AI to provide intelligent feedback'
+author: 'Diego Maroto'
+
+inputs:
+  anthropic_api_key:
+    description: 'Anthropic API key for Claude'
+    required: true
+  github_token:
+    description: 'GitHub token for API access'
+    required: true
+    default: ${{ github.token }}
+  file_patterns:
+    description: 'Glob patterns for files to analyze (comma-separated)'
+    required: false
+    default: '**/*.{js,jsx,ts,tsx,py,java,rb,go,rs}'
+  exclude_patterns:
+    description: 'Glob patterns for files to exclude (comma-separated)'
+    required: false
+    default: '**/node_modules/**,**/dist/**,**/build/**'
+  max_files:
+    description: 'Maximum number of files to analyze in a single PR'
+    required: false
+    default: '10'
+  comment_threshold:
+    description: 'Minimum confidence score for comments (0-1)'
+    required: false
+    default: '0.7'
+  analysis_level:
+    description: 'Depth of analysis (basic, standard, deep)'
+    required: false
+    default: 'standard'
+  model:
+    description: 'Claude model to use for analysis'
+    required: false
+    default: 'claude-3-5-haiku-20241022'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'eye'
+  color: 'blue'

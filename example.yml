@@ -1,0 +1,70 @@
+name: PR Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '**.js'
+      - '**.jsx'
+      - '**.ts'
+      - '**.tsx'
+      - '**.py'
+      - '**.java'
+      - '**.go'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'requirements.txt'
+      - 'go.mod'
+      - 'pom.xml'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to get the full history for better analysis
+
+      - name: PR Analysis
+        uses: diekotto/ai-pull-review@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Optional configurations
+          file_patterns: '**/*.{js,jsx,ts,tsx,py,java,go}'
+          exclude_patterns: '**/node_modules/**,**/dist/**,**/build/**,**/__tests__/**'
+          max_files: '15'
+          analysis_level: 'deep'
+          model: 'claude-3-haiku-20240307'
+          comment_threshold: '0.8'
+
+  # Example of using the action with different configurations for specific paths
+  analyze-security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    if: |
+      contains(github.event.pull_request.changed_files, 'security/') ||
+      contains(github.event.pull_request.changed_files, 'auth/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Security-focused PR Analysis
+        uses: diekotto/ai-pull-review@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          analysis_level: 'deep'
+          model: 'claude-3-opus-20240229' # Using more capable model for security analysis
+          file_patterns: '**/security/**/*.{js,py,java,go},**/auth/**/*.{js,py,java,go}'
+          comment_threshold: '0.6' # Lower threshold for security concerns
