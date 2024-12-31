@@ -69,6 +69,9 @@ git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
 git push origin main
 git push origin "v$NEW_VERSION"
 
+# Creating the package
+zip -r artifacts/bundle.zip dist/bundle.js
+
 # Create GitHub release
 echo "Creating GitHub release..."
 gh release create "v$NEW_VERSION" \
@@ -100,7 +103,7 @@ See the [README.md](./README.md) for detailed installation and usage instruction
 - Requires an Anthropic API key
 - Uses Claude 3 Haiku by default") \
     --draft \
-    dist/bundle.js
+    artifacts/bundle.zip
 
 echo "Draft release v$NEW_VERSION created!"
 echo "Please:"
