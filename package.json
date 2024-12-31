@@ -1,6 +1,6 @@
 {
   "name": "ai-pull-review",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
   "main": "dist/index.js",
   "scripts": {
