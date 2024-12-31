@@ -2,6 +2,8 @@
 
 A GitHub Action powered by Anthropic's Claude AI that provides intelligent analysis and review of pull requests.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - Automated code review using Claude AI
