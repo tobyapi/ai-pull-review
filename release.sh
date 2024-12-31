@@ -87,7 +87,7 @@ gh release create "v$NEW_VERSION" \
 -
 ") \
     --draft \
-    dist/index.js
+    dist/bundle.js
 
 echo "Draft release v$NEW_VERSION created!"
 echo "Please:"
