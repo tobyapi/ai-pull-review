@@ -11,9 +11,11 @@ const core = require('@actions/core');
 function matchesPatterns(filename, includePatterns, excludePatterns) {
   // If no include patterns are specified, consider all files as included
   const isIncluded = includePatterns.length === 0 || includePatterns.some((pattern) => minimatch(filename, pattern));
+  core.debug(`File ${filename} is included: ${isIncluded}`);
 
   // Check if file matches any exclude pattern
   const isExcluded = excludePatterns.some((pattern) => minimatch(filename, pattern));
+  core.debug(`File ${filename} is excluded: ${isExcluded}`);
 
   return isIncluded && !isExcluded;
 }

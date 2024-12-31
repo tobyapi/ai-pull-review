@@ -35578,7 +35578,9 @@ var require_fileFilter = __commonJS({
     var core2 = require_core();
     function matchesPatterns(filename, includePatterns, excludePatterns) {
       const isIncluded = includePatterns.length === 0 || includePatterns.some((pattern) => minimatch(filename, pattern));
+      core2.debug(`File ${filename} is included: ${isIncluded}`);
       const isExcluded = excludePatterns.some((pattern) => minimatch(filename, pattern));
+      core2.debug(`File ${filename} is excluded: ${isExcluded}`);
       return isIncluded && !isExcluded;
     }
     function hasSignificantChanges(file) {
