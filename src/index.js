@@ -1,13 +1,17 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const Anthropic = require('@anthropic-ai/sdk');
+const { filterFiles } = require('./utils/fileFilter');
+const { analyzeFile } = require('./analyzer');
 
 async function run() {
   try {
     // Get inputs from action.yml
     const anthropicApiKey = core.getInput('anthropic_api_key', { required: true });
     const githubToken = core.getInput('github_token', { required: true });
-    const model = core.getInput('model', { required: true });
+    const analysisLevel = core.getInput('analysis_level');
+    const model = core.getInput('model');
+    const commentThreshold = parseFloat(core.getInput('comment_threshold'));
 
     // Initialize Anthropic client
     const anthropic = new Anthropic({
@@ -66,40 +70,31 @@ async function run() {
           ref: context.payload.pull_request.head.sha,
         });
 
-        // Prepare content for analysis
-        const content = Buffer.from(fileContent.content, 'base64').toString();
+        // Prepare file for analysis
+        const fileData = {
+          filename: file.filename,
+          content: Buffer.from(fileContent.content, 'base64').toString(),
+        };
 
         // Analyze with Claude
-        const analysis = await anthropic.messages.create({
-          model: model,
-          max_tokens: 1024,
-          messages: [
-            {
-              role: 'user',
-              content: `Please analyze this code change and provide feedback:
-            
-            File: ${file.filename}
-            Changes:
-            ${content}
-            
-            Please provide:
-            1. Potential issues or bugs
-            2. Style improvements
-            3. Performance considerations
-            4. Security concerns
-            5. Documentation needs`,
-            },
-          ],
+        const analysisComment = await analyzeFile(anthropic, fileData, {
+          analysisLevel,
+          model,
+          commentThreshold,
         });
 
-        // Post comment with analysis
-        await octokit.rest.issues.createComment({
-          ...repo,
-          issue_number: prNumber,
-          body: `## AI Analysis for ${file.filename}\n\n${analysis.content[0].text}`,
-        });
+        // Only post comment if it meets the threshold
+        if (analysisComment) {
+          await octokit.rest.issues.createComment({
+            ...repo,
+            issue_number: prNumber,
+            body: analysisComment,
+          });
+        } else {
+          core.info(`Skipping comment for ${file.filename} - below confidence threshold`);
+        }
       } catch (error) {
-        core.warning(`Error analyzing file ${file.filename}: ${error.message}`);
+        core.warning(`Error processing file ${file.filename}: ${error.message}`);
       }
     }
   } catch (error) {

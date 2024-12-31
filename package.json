@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "prepare": "husky"
+    "prepare": "husky",
+    "pretty": "prettier --write ."
   },
   "repository": {
     "type": "git",
