@@ -35832,8 +35832,8 @@ var require_index = __commonJS({
           console.log("Printing analysis results");
           const timestamp = (/* @__PURE__ */ new Date()).toISOString();
           const markdown = `# AI Pull Request Analysis
-Generated on: ${timestamp}
-PR: ${repoFullName}#${prNumber}
+Generated on: ${timestamp}  
+PR: ${repoFullName}#${prNumber}  
 
 ${analysisResults.join("\n\n---\n\n")}
 `;
