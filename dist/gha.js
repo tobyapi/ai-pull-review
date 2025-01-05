@@ -23880,7 +23880,7 @@ var require_config = __commonJS({
         prNumber,
         commentThreshold: parseFloat(core2.getInput("comment_threshold")) || defaultConfig.commentThreshold,
         writePullRequest: defaultConfig.writePullRequest,
-        repo: context.repo,
+        repo: `${context.repo.owner}/${context.repo.repo}`,
         output: defaultConfig.output
       };
     }

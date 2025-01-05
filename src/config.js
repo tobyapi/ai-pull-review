@@ -45,7 +45,7 @@ function getConfigFromInputs() {
     prNumber: prNumber,
     commentThreshold: parseFloat(core.getInput('comment_threshold')) || defaultConfig.commentThreshold,
     writePullRequest: defaultConfig.writePullRequest,
-    repo: context.repo,
+    repo: `${context.repo.owner}/${context.repo.repo}`,
     output: defaultConfig.output,
   };
 }
