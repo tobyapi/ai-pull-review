@@ -25610,9 +25610,7 @@ ${analysis}
 *Generated using Claude AI - Review and validate all suggestions*`;
     }
     async function analyzeFile(file, options = {}) {
-      const {
-        analysisLevel = "standard"
-      } = options;
+      const { analysisLevel = "standard" } = options;
       try {
         const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel);
         return prompt;
@@ -36387,10 +36385,10 @@ var require_anthropic = __commonJS({
             const customId = entry.custom_id;
             const message = this.messages.find((msg) => msg.customId === customId);
             if (message) {
-              message.response = entry.result.message.content;
+              message.response = entry.result.message.content[0].text;
             } else {
               console.error(`No message found for custom ID: ${customId}`);
-              console.log(this.messages);
+              console.error(this.messages);
               continue;
             }
             results.push({
@@ -36461,11 +36459,14 @@ var require_anthropic = __commonJS({
           throw new Error("Max retries reached");
         }
         if (this._currentWaitTime === null) {
-          this._currentWaitTime = initialMs * 2;
+          this._currentWaitTime = initialMs;
         }
-        this._currentWaitTime = Math.max(Math.floor(this._currentWaitTime / 2), this._minWaitTime);
         console.debug(`Sleeping for ${this._currentWaitTime} ms`);
-        return new Promise((resolve) => setTimeout(resolve, this._currentWaitTime));
+        return new Promise((resolve) => {
+          const timeout = setTimeout(resolve, this._currentWaitTime);
+          this._currentWaitTime = Math.max(Math.floor(this._currentWaitTime * 0.666), this._minWaitTime);
+          return timeout;
+        });
       }
       resetWaitTime() {
         this._currentWaitTime = null;
@@ -36602,7 +36603,8 @@ var require_index = __commonJS({
             if (!fs.existsSync(output)) {
               fs.mkdirSync(output, { recursive: true });
             }
-            const outputFile = path.join(output, `${result.filename}.md`);
+            const fileName = result.fileName.split("/").join("-");
+            const outputFile = path.join(output, `${fileName}.md`);
             fs.writeFileSync(outputFile, markdown, "utf8");
             console.log(`Analysis written to ${output}`);
           }
