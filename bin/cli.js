@@ -38118,7 +38118,7 @@ var require_package2 = __commonJS({
   "package.json"(exports2, module2) {
     module2.exports = {
       name: "@diekotto/ai-pull-review-cli",
-      version: "1.0.0",
+      version: "1.0.1",
       description: "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
       author: "Diego Maroto",
       license: "MIT",
@@ -38150,7 +38150,7 @@ var require_package2 = __commonJS({
         "**/*": "prettier --write --ignore-unknown"
       },
       bin: {
-        "ai-pull-review": "./bin/cli.js"
+        "ai-pull-review-cli": "./bin/cli.js"
       },
       files: [
         "dist",
@@ -38184,7 +38184,7 @@ var require_package2 = __commonJS({
 require_main().config();
 var { program } = require_commander();
 var { analyzeGitHubPR } = require_index();
-program.name("ai-pull-review").description("AI-powered pull request analysis").version(require_package2().version).requiredOption("-p, --pr <number>", "Pull request number").option("-r, --repo <owner/repo>", "Repository (default: from git config)").option("-t, --token <token>", "GitHub token", process.env.GITHUB_TOKEN).option("-k, --key <key>", "Anthropic API key", process.env.ANTHROPIC_API_KEY).option("-l, --level <level>", "Analysis level (basic, standard, deep)", "basic").option("-m, --model <model>", "Claude model to use", "claude-3-5-haiku-20241022").option("--file-patterns <patterns>", "File patterns to include (comma-separated)").option(
+program.name("ai-pull-review-cli").description("AI-powered pull request analysis").version(require_package2().version).requiredOption("-p, --pr <number>", "Pull request number").option("-r, --repo <owner/repo>", "Repository (default: from git config)").option("-t, --token <token>", "GitHub token", process.env.GITHUB_TOKEN).option("-k, --key <key>", "Anthropic API key", process.env.ANTHROPIC_API_KEY).option("-l, --level <level>", "Analysis level (basic, standard, deep)", "basic").option("-m, --model <model>", "Claude model to use", "claude-3-5-haiku-20241022").option("--file-patterns <patterns>", "File patterns to include (comma-separated)").option(
   "--exclude-patterns <patterns>",
   "File patterns to exclude (comma-separated)",
   "**/node_modules/**, **/dist/**, **/build/**, **/bin/**, **/artifacts/**"

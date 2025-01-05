@@ -5,7 +5,7 @@ const { program } = require('commander');
 const { analyzeGitHubPR } = require('./index');
 
 program
-  .name('ai-pull-review')
+  .name('ai-pull-review-cli')
   .description('AI-powered pull request analysis')
   .version(require('../package.json').version)
   .requiredOption('-p, --pr <number>', 'Pull request number')
