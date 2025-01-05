@@ -38220,7 +38220,7 @@ if (!options.key) {
   process.exit(1);
 }
 if (!options.repo) {
-  console.error("Error: Repository is required. Set --repo or configure git");
+  console.error('Error: Repository is required. Use "-r, --repo <owner/repo>" to specify the owner/repo');
   process.exit(1);
 }
 var config = {
