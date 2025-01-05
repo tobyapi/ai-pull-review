@@ -81,7 +81,7 @@ async function analyzeGitHubPR(config) {
           model,
           commentThreshold,
         });
-        if (anthropic.messages.length < maxFiles) {
+        if (anthropic.messages.length < 1) {
           anthropic.addMessage(analysisPrompt, file.filename, fileSizeKb);
         } else {
           if (writePullRequest) {
@@ -142,7 +142,7 @@ async function analyzeGitHubPR(config) {
         if (!fs.existsSync(output)) {
           fs.mkdirSync(output, { recursive: true });
         }
-        const outputFile = path.join(output, `${result.filename}.md`);
+        const outputFile = path.join(output, `${result.fileName}.md`);
         fs.writeFileSync(outputFile, markdown, 'utf8');
         console.log(`Analysis written to ${output}`);
       }

@@ -86,10 +86,10 @@ class AnthropicBatchManager {
         const customId = entry.custom_id;
         const message = this.messages.find((msg) => msg.customId === customId);
         if (message) {
-          message.response = entry.result.message.content;
+          message.response = entry.result.message.content[0].text;
         } else {
           console.error(`No message found for custom ID: ${customId}`);
-          console.log(this.messages);
+          console.error(this.messages);
           continue;
         }
         results.push({
@@ -165,13 +165,16 @@ class AnthropicBatchManager {
       throw new Error('Max retries reached');
     }
     if (this._currentWaitTime === null) {
-      this._currentWaitTime = initialMs * 2;
+      this._currentWaitTime = initialMs;
     }
 
-    this._currentWaitTime = Math.max(Math.floor(this._currentWaitTime / 2), this._minWaitTime);
     console.debug(`Sleeping for ${this._currentWaitTime} ms`);
 
-    return new Promise((resolve) => setTimeout(resolve, this._currentWaitTime));
+    return new Promise((resolve) => {
+      const timeout = setTimeout(resolve, this._currentWaitTime);
+      this._currentWaitTime = Math.max(Math.floor(this._currentWaitTime * 0.666), this._minWaitTime);
+      return timeout;
+    });
   }
   resetWaitTime() {
     this._currentWaitTime = null;

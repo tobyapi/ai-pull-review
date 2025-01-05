@@ -18,6 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate version format
+        run: |
+          if ! [[ ${{ github.event.inputs.version }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format. Must be in format X.Y.Z (e.g., 1.0.1)"
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,6 +43,14 @@ jobs:
       - name: Update version
         run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
 
+      - name: Commit version changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add package.json
+          git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+          git push
+
       - name: Publish to NPM
         run: npm publish --access public
         env:
@@ -43,8 +58,6 @@ jobs:
 
       - name: Create Tag
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git tag v${{ github.event.inputs.version }}
           git push origin v${{ github.event.inputs.version }}
         env:
