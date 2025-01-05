@@ -24,6 +24,8 @@ async function analyzeGitHubPR(config) {
       output,
     } = config;
 
+    console.log(`Analyzing PR ${repoFullName}#${prNumber}`);
+
     // Initialize clients
     const anthropic = new AnthropicBatchManager(anthropicApiKey, model);
     const octokit = github.getOctokit(githubToken);

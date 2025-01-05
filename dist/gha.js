@@ -36503,6 +36503,7 @@ var require_index = __commonJS({
           repo: repoFullName,
           output
         } = config;
+        console.log(`Analyzing PR ${repoFullName}#${prNumber}`);
         const anthropic = new AnthropicBatchManager(anthropicApiKey, model);
         const octokit = github.getOctokit(githubToken);
         const [owner, repo] = repoFullName.split("/");
