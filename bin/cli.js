@@ -38220,17 +38220,8 @@ if (!options.key) {
   process.exit(1);
 }
 if (!options.repo) {
-  try {
-    const { execSync } = require("child_process");
-    const remoteUrl = execSync("git config --get remote.origin.url", { encoding: "utf8" }).trim();
-    const match = remoteUrl.match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/);
-    if (match) {
-      options.repo = match[1];
-    }
-  } catch (error) {
-    console.error("Error: Could not determine repository. Please provide --repo");
-    process.exit(1);
-  }
+  console.error("Error: Repository is required. Set --repo or configure git");
+  process.exit(1);
 }
 var config = {
   anthropicApiKey: options.key,
