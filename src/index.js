@@ -81,7 +81,7 @@ async function analyzeGitHubPR(config) {
           model,
           commentThreshold,
         });
-        if (anthropic.messages.length < 1) {
+        if (anthropic.messages.length < maxFiles) {
           anthropic.addMessage(analysisPrompt, file.filename, fileSizeKb);
         } else {
           if (writePullRequest) {
