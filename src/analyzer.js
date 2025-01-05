@@ -1,5 +1,3 @@
-const core = require('@actions/core');
-
 /**
  * Creates the analysis prompt for Claude
  * @param {string} filename - The name of the file
@@ -71,62 +69,18 @@ ${analysis}
 
 /**
  * Analyzes a file using the Anthropic API
- * @param {Object} anthropic - Initialized Anthropic client
  * @param {Object} file - File object with filename and content
  * @param {Object} options - Analysis options
  * @returns {Promise<string>} Analysis result
  */
-async function analyzeFile(anthropic, file, options = {}) {
-  const {
-    analysisLevel = 'standard',
-    model = 'claude-3-5-haiku-20241022',
-    maxTokens = 1024,
-    commentThreshold = 0.7,
-  } = options;
+async function analyzeFile(file, options = {}) {
+  const { analysisLevel = 'standard' } = options;
 
   try {
     const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel);
-
-    const response = await anthropic.messages.create({
-      model,
-      max_tokens: maxTokens,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    // Check if the response meets our confidence threshold
-    const confidenceIndicators = {
-      high: ['critical', 'severe', 'important', 'significant', 'major', 'definitely', 'must', 'required'],
-      medium: ['should', 'recommend', 'consider', 'might', 'may', 'could improve', 'suggested'],
-      low: ['minor', 'optional', 'potentially', 'slightly', 'might consider'],
-    };
-
-    const responseText = response.content[0].text.toLowerCase();
-
-    // Calculate a simple confidence score based on the language used
-    let confidenceScore = 0;
-
-    // High priority indicators have more weight
-    confidenceScore += confidenceIndicators.high.filter((indicator) => responseText.includes(indicator)).length * 0.4;
-
-    // Medium priority indicators have medium weight
-    confidenceScore += confidenceIndicators.medium.filter((indicator) => responseText.includes(indicator)).length * 0.2;
-
-    // Low priority indicators have less weight
-    confidenceScore += confidenceIndicators.low.filter((indicator) => responseText.includes(indicator)).length * 0.1;
-
-    // Normalize score to be between 0 and 1
-    const normalizedScore = Math.min(confidenceScore, 1);
-
-    if (normalizedScore < commentThreshold) {
-      core.debug(`Analysis confidence (${normalizedScore}) below threshold (${commentThreshold}). Skipping comment.`);
-      return null;
-    }
-
-    core.debug(`Analysis confidence: ${normalizedScore}, proceeding with comment.`);
-
-    return formatAnalysisComment(file.filename, response.content[0].text);
+    return prompt;
   } catch (error) {
-    core.warning(`Error analyzing ${file.filename}: ${error.message}`);
+    console.error(`Error analyzing ${file.filename}: ${error.message}`);
     throw error;
   }
 }
