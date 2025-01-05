@@ -81,7 +81,6 @@ function filterFiles(files, options) {
   filteredFiles.forEach((file) => {
     console.debug(`Will analyze: ${file.filename} (${file.changes} changes)`);
   });
-
   return filteredFiles;
 }
 

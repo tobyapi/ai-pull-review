@@ -1,5 +1,5 @@
 {
-  "name": "ai-pull-review-cli",
+  "name": "@diekotto/ai-pull-review-cli",
   "version": "1.0.0",
   "description": "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
   "author": "Diego Maroto",
@@ -36,6 +36,7 @@
   },
   "files": [
     "dist",
+    "bin",
     "action.yml",
     "README.md",
     "LICENSE"
@@ -54,6 +55,7 @@
     "@anthropic-ai/sdk": "^0.33.1",
     "commander": "^13.0.0",
     "dotenv": "^16.4.7",
-    "minimatch": "^10.0.1"
+    "minimatch": "^10.0.1",
+    "uuid": "^11.0.3"
   }
 }
