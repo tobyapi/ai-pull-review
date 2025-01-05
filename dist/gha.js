@@ -19781,53 +19781,6 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
   }
 });
 
-// src/config.js
-var require_config = __commonJS({
-  "src/config.js"(exports2, module2) {
-    var core2 = require_core();
-    var defaultConfig = {
-      model: "claude-3-5-haiku-20241022",
-      analysisLevel: "standard",
-      commentThreshold: 0.7,
-      maxFiles: 10,
-      maxSize: 100,
-      filePatterns: ["**/*.{js,jsx,ts,tsx,py,java,rb,go,rs}"],
-      excludePatterns: ["**/node_modules/**", "**/dist/**", "**/build/**"],
-      writePullRequest: true,
-      output: false
-    };
-    function getConfigFromInputs2() {
-      const context = github.context;
-      if (!context.payload.pull_request) {
-        throw new Error("This action can only be run on pull request events");
-      }
-      const prNumber = context.payload.pull_request.number;
-      if (!prNumber) {
-        throw new Error("Could not determine PR number");
-      }
-      return {
-        anthropicApiKey: core2.getInput("anthropic_api_key", { required: true }),
-        githubToken: core2.getInput("github_token", { required: true }),
-        analysisLevel: core2.getInput("analysis_level") || defaultConfig.analysisLevel,
-        model: core2.getInput("model") || defaultConfig.model,
-        filePatterns: core2.getInput("file_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.filePatterns,
-        excludePatterns: core2.getInput("exclude_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.excludePatterns,
-        maxFiles: parseInt(core2.getInput("max_files"), 10) || defaultConfig.maxFiles,
-        maxSize: parseInt(core2.getInput("max_size"), 10) || defaultConfig.maxSize,
-        prNumber,
-        commentThreshold: parseFloat(core2.getInput("comment_threshold")) || defaultConfig.commentThreshold,
-        writePullRequest: defaultConfig.writePullRequest,
-        repo: context.repo,
-        output: defaultConfig.output
-      };
-    }
-    module2.exports = {
-      defaultConfig,
-      getConfigFromInputs: getConfigFromInputs2
-    };
-  }
-});
-
 // node_modules/@actions/github/lib/context.js
 var require_context = __commonJS({
   "node_modules/@actions/github/lib/context.js"(exports2) {
@@ -23887,6 +23840,54 @@ var require_github = __commonJS({
       return new GitHubWithPlugins((0, utils_1.getOctokitOptions)(token, options));
     }
     exports2.getOctokit = getOctokit;
+  }
+});
+
+// src/config.js
+var require_config = __commonJS({
+  "src/config.js"(exports2, module2) {
+    var core2 = require_core();
+    var github = require_github();
+    var defaultConfig = {
+      model: "claude-3-5-haiku-20241022",
+      analysisLevel: "standard",
+      commentThreshold: 0.7,
+      maxFiles: 10,
+      maxSize: 100,
+      filePatterns: ["**/*.{js,jsx,ts,tsx,py,java,rb,go,rs}"],
+      excludePatterns: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+      writePullRequest: true,
+      output: false
+    };
+    function getConfigFromInputs2() {
+      const context = github.context;
+      if (!context.payload.pull_request) {
+        throw new Error("This action can only be run on pull request events");
+      }
+      const prNumber = context.payload.pull_request.number;
+      if (!prNumber) {
+        throw new Error("Could not determine PR number");
+      }
+      return {
+        anthropicApiKey: core2.getInput("anthropic_api_key", { required: true }),
+        githubToken: core2.getInput("github_token", { required: true }),
+        analysisLevel: core2.getInput("analysis_level") || defaultConfig.analysisLevel,
+        model: core2.getInput("model") || defaultConfig.model,
+        filePatterns: core2.getInput("file_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.filePatterns,
+        excludePatterns: core2.getInput("exclude_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.excludePatterns,
+        maxFiles: parseInt(core2.getInput("max_files"), 10) || defaultConfig.maxFiles,
+        maxSize: parseInt(core2.getInput("max_size"), 10) || defaultConfig.maxSize,
+        prNumber,
+        commentThreshold: parseFloat(core2.getInput("comment_threshold")) || defaultConfig.commentThreshold,
+        writePullRequest: defaultConfig.writePullRequest,
+        repo: context.repo,
+        output: defaultConfig.output
+      };
+    }
+    module2.exports = {
+      defaultConfig,
+      getConfigFromInputs: getConfigFromInputs2
+    };
   }
 });
 
@@ -36481,7 +36482,7 @@ var require_index = __commonJS({
   "src/index.js"(exports2, module2) {
     var fs = require("fs");
     var path = require("path");
-    var github2 = require_github();
+    var github = require_github();
     var { filterFiles } = require_fileFilter();
     var { analyzeFile, formatAnalysisComment } = require_analyzer();
     var { AnthropicBatchManager } = require_anthropic();
@@ -36503,7 +36504,7 @@ var require_index = __commonJS({
           output
         } = config;
         const anthropic = new AnthropicBatchManager(anthropicApiKey, model);
-        const octokit = github2.getOctokit(githubToken);
+        const octokit = github.getOctokit(githubToken);
         const [owner, repo] = repoFullName.split("/");
         const { data: files } = await octokit.rest.pulls.listFiles({
           owner,
@@ -36522,7 +36523,7 @@ var require_index = __commonJS({
               owner,
               repo,
               path: file.filename,
-              ref: github2.context.payload?.pull_request?.head?.sha
+              ref: github.context.payload?.pull_request?.head?.sha
             });
             const fileSizeKb = fileContent.size / 1024;
             if (fileSizeKb > maxSize) {

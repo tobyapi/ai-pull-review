@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const github = require('@actions/github');
 
 const defaultConfig = {
   model: 'claude-3-5-haiku-20241022',
