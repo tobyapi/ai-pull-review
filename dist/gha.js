@@ -35763,6 +35763,7 @@ var require_index = __commonJS({
     var github = require_github();
     var Anthropic = require_sdk();
     var fs = require("fs/promises");
+    var path = require("path");
     var { filterFiles } = require_fileFilter();
     var { analyzeFile } = require_analyzer();
     var { getConfigFromInputs } = require_config();
@@ -35795,6 +35796,7 @@ var require_index = __commonJS({
           maxFiles
         });
         const analysisResults = [];
+        console.debug(`Analyzing ${relevantFiles.length} files`);
         for (const file of relevantFiles) {
           try {
             const { data: fileContent } = await octokit.rest.repos.getContent({
@@ -35820,25 +35822,29 @@ var require_index = __commonJS({
                   issue_number: prNumber,
                   body: analysisComment
                 });
+              } else {
+                console.log("Printing analysis results");
+                const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+                const markdown = [
+                  `# AI Pull Request Analysis`,
+                  `Generated on: ${timestamp}`,
+                  `PR: ${repoFullName}#${prNumber}`,
+                  `File: ${file.filename}`,
+                  `${analysisComment}`
+                ].join("\n\n");
+                if (!fs.existsSync(output)) {
+                  await fs.mkdir(output, { recursive: true });
+                }
+                const outputFile = path.join(output, `${file.filename}.md`);
+                await fs.writeFile(outputFile, markdown, "utf8");
+                core2.info(`Analysis written to ${output}`);
               }
               analysisResults.push(analysisComment);
             }
             console.log(`Analyzed ${file.filename}`);
           } catch (error) {
-            console.warning(`Error processing file ${file.filename}: ${error.message}`);
+            console.error(`Error processing file ${file.filename}: ${error.message}`);
           }
-        }
-        if (output) {
-          console.log("Printing analysis results");
-          const timestamp = (/* @__PURE__ */ new Date()).toISOString();
-          const markdown = `# AI Pull Request Analysis
-Generated on: ${timestamp}  
-PR: ${repoFullName}#${prNumber}  
-
-${analysisResults.join("\n\n---\n\n")}
-`;
-          await fs.writeFile(output, markdown, "utf8");
-          core2.info(`Analysis written to ${output}`);
         }
         return analysisResults;
       } catch (error) {

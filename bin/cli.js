@@ -39376,6 +39376,7 @@ var require_index = __commonJS({
     var github = require_github();
     var Anthropic = require_sdk();
     var fs = require("fs/promises");
+    var path = require("path");
     var { filterFiles } = require_fileFilter();
     var { analyzeFile } = require_analyzer();
     var { getConfigFromInputs } = require_config();
@@ -39408,6 +39409,7 @@ var require_index = __commonJS({
           maxFiles
         });
         const analysisResults = [];
+        console.debug(`Analyzing ${relevantFiles.length} files`);
         for (const file of relevantFiles) {
           try {
             const { data: fileContent } = await octokit.rest.repos.getContent({
@@ -39433,25 +39435,29 @@ var require_index = __commonJS({
                   issue_number: prNumber,
                   body: analysisComment
                 });
+              } else {
+                console.log("Printing analysis results");
+                const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+                const markdown = [
+                  `# AI Pull Request Analysis`,
+                  `Generated on: ${timestamp}`,
+                  `PR: ${repoFullName}#${prNumber}`,
+                  `File: ${file.filename}`,
+                  `${analysisComment}`
+                ].join("\n\n");
+                if (!fs.existsSync(output)) {
+                  await fs.mkdir(output, { recursive: true });
+                }
+                const outputFile = path.join(output, `${file.filename}.md`);
+                await fs.writeFile(outputFile, markdown, "utf8");
+                core.info(`Analysis written to ${output}`);
               }
               analysisResults.push(analysisComment);
             }
             console.log(`Analyzed ${file.filename}`);
           } catch (error) {
-            console.warning(`Error processing file ${file.filename}: ${error.message}`);
+            console.error(`Error processing file ${file.filename}: ${error.message}`);
           }
-        }
-        if (output) {
-          console.log("Printing analysis results");
-          const timestamp = (/* @__PURE__ */ new Date()).toISOString();
-          const markdown = `# AI Pull Request Analysis
-Generated on: ${timestamp}  
-PR: ${repoFullName}#${prNumber}  
-
-${analysisResults.join("\n\n---\n\n")}
-`;
-          await fs.writeFile(output, markdown, "utf8");
-          core.info(`Analysis written to ${output}`);
         }
         return analysisResults;
       } catch (error) {
@@ -39543,7 +39549,7 @@ var require_package2 = __commonJS({
 require_main().config();
 var { program } = require_commander();
 var { analyzeGitHubPR } = require_index();
-program.name("ai-pull-review").description("AI-powered pull request analysis").version(require_package2().version).requiredOption("-p, --pr <number>", "Pull request number").option("-r, --repo <owner/repo>", "Repository (default: from git config)").option("-t, --token <token>", "GitHub token", process.env.GITHUB_TOKEN).option("-k, --key <key>", "Anthropic API key", process.env.ANTHROPIC_API_KEY).option("-l, --level <level>", "Analysis level (basic, standard, deep)", "standard").option("-m, --model <model>", "Claude model to use", "claude-3-5-haiku-20241022").option("--file-patterns <patterns>", "File patterns to include (comma-separated)").option("--exclude-patterns <patterns>", "File patterns to exclude (comma-separated)").option("--max-files <number>", "Maximum files to analyze", "10").option("--threshold <number>", "Comment confidence threshold", "0.6").option("-o, --output <file>", "Output file for results", "results.md");
+program.name("ai-pull-review").description("AI-powered pull request analysis").version(require_package2().version).requiredOption("-p, --pr <number>", "Pull request number").option("-r, --repo <owner/repo>", "Repository (default: from git config)").option("-t, --token <token>", "GitHub token", process.env.GITHUB_TOKEN).option("-k, --key <key>", "Anthropic API key", process.env.ANTHROPIC_API_KEY).option("-l, --level <level>", "Analysis level (basic, standard, deep)", "standard").option("-m, --model <model>", "Claude model to use", "claude-3-5-haiku-20241022").option("--file-patterns <patterns>", "File patterns to include (comma-separated)").option("--exclude-patterns <patterns>", "File patterns to exclude (comma-separated)").option("--max-files <number>", "Maximum files to analyze", "10").option("--threshold <number>", "Comment confidence threshold", "0.6").option("-o, --output <folder>", "Output folder for results", "results");
 program.parse();
 var options = program.opts();
 if (!options.token) {

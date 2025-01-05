@@ -18,7 +18,7 @@ program
   .option('--exclude-patterns <patterns>', 'File patterns to exclude (comma-separated)')
   .option('--max-files <number>', 'Maximum files to analyze', '10')
   .option('--threshold <number>', 'Comment confidence threshold', '0.6')
-  .option('-o, --output <file>', 'Output file for results', 'results.md');
+  .option('-o, --output <folder>', 'Output folder for results', 'results');
 
 program.parse();
 

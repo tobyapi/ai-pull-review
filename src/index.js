@@ -2,6 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const Anthropic = require('@anthropic-ai/sdk');
 const fs = require('fs/promises');
+const path = require('path');
 const { filterFiles } = require('./utils/fileFilter');
 const { analyzeFile } = require('./analyzer');
 const { getConfigFromInputs } = require('./config');
@@ -46,6 +47,7 @@ async function analyzeGitHubPR(config) {
     // Store all analysis results
     const analysisResults = [];
 
+    console.debug(`Analyzing ${relevantFiles.length} files`);
     // Analyze each file
     for (const file of relevantFiles) {
       try {
@@ -79,6 +81,22 @@ async function analyzeGitHubPR(config) {
               issue_number: prNumber,
               body: analysisComment,
             });
+          } else {
+            console.log('Printing analysis results');
+            const timestamp = new Date().toISOString();
+            const markdown = [
+              `# AI Pull Request Analysis`,
+              `Generated on: ${timestamp}`,
+              `PR: ${repoFullName}#${prNumber}`,
+              `File: ${file.filename}`,
+              `${analysisComment}`,
+            ].join('\n\n');
+            if (!fs.existsSync(output)) {
+              await fs.mkdir(output, { recursive: true });
+            }
+            const outputFile = path.join(output, `${file.filename}.md`);
+            await fs.writeFile(outputFile, markdown, 'utf8');
+            core.info(`Analysis written to ${output}`);
           }
 
           // Store analysis for output file
@@ -87,25 +105,9 @@ async function analyzeGitHubPR(config) {
 
         console.log(`Analyzed ${file.filename}`);
       } catch (error) {
-        console.warning(`Error processing file ${file.filename}: ${error.message}`);
+        console.error(`Error processing file ${file.filename}: ${error.message}`);
       }
     }
-
-    // Write results to output file if specified
-    if (output) {
-      console.log('Printing analysis results');
-      const timestamp = new Date().toISOString();
-      const markdown = `# AI Pull Request Analysis
-Generated on: ${timestamp}  
-PR: ${repoFullName}#${prNumber}  
-
-${analysisResults.join('\n\n---\n\n')}
-`;
-
-      await fs.writeFile(output, markdown, 'utf8');
-      core.info(`Analysis written to ${output}`);
-    }
-
     return analysisResults;
   } catch (error) {
     console.error(error.message);
