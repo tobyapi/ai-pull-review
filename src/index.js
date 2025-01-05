@@ -142,8 +142,7 @@ async function analyzeGitHubPR(config) {
         if (!fs.existsSync(output)) {
           fs.mkdirSync(output, { recursive: true });
         }
-        const splittedName = result.fileName.split('/');
-        const fileName = splittedName[splittedName.length - 1].split('.')[0];
+        const fileName = result.fileName.split('/').join('-');
         const outputFile = path.join(output, `${fileName}.md`);
         fs.writeFileSync(outputFile, markdown, 'utf8');
         console.log(`Analysis written to ${output}`);
