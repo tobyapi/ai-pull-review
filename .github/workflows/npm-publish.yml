@@ -31,23 +31,29 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Update version
+        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build cli
         run: npm run cli
+
+      - name: Build gha
+        run: npm run gha
 
       - name: Make CLI executable
         run: chmod +x bin/cli.js
-
-      - name: Update version
-        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
 
       - name: Commit version changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add package.json
+          git add package-lock.json
+          git add bin
+          git add dist
           git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
           git push
 
