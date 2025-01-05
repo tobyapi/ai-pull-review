@@ -175,7 +175,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          file_patterns: '**/*.{js,jsx,ts,tsx}'
+          file_patterns: '**/*.js,**/*.jsx,**/*.ts,**/*.tsx'
           exclude_patterns: '**/node_modules/**,**/dist/**,**/*.test.js'
           analysis_level: 'deep'
           max_files: '15'
