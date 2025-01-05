@@ -37,7 +37,7 @@ inputs:
 
 runs:
   using: 'node20'
-  main: 'dist/bundle.js'
+  main: 'dist/gha.js'
 
 branding:
   icon: 'eye'

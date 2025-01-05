@@ -33791,7 +33791,7 @@ var require_sdk = __commonJS({
     var models_1 = require_models2();
     var beta_1 = require_beta();
     var messages_1 = require_messages2();
-    var Anthropic2 = class extends Core.APIClient {
+    var Anthropic = class extends Core.APIClient {
       /**
        * API Client for interfacing with the Anthropic API.
        *
@@ -33881,33 +33881,33 @@ var require_sdk = __commonJS({
         return { Authorization: `Bearer ${this.authToken}` };
       }
     };
-    exports2.Anthropic = Anthropic2;
-    _a = Anthropic2;
-    Anthropic2.Anthropic = _a;
-    Anthropic2.HUMAN_PROMPT = "\n\nHuman:";
-    Anthropic2.AI_PROMPT = "\n\nAssistant:";
-    Anthropic2.DEFAULT_TIMEOUT = 6e5;
-    Anthropic2.AnthropicError = Errors.AnthropicError;
-    Anthropic2.APIError = Errors.APIError;
-    Anthropic2.APIConnectionError = Errors.APIConnectionError;
-    Anthropic2.APIConnectionTimeoutError = Errors.APIConnectionTimeoutError;
-    Anthropic2.APIUserAbortError = Errors.APIUserAbortError;
-    Anthropic2.NotFoundError = Errors.NotFoundError;
-    Anthropic2.ConflictError = Errors.ConflictError;
-    Anthropic2.RateLimitError = Errors.RateLimitError;
-    Anthropic2.BadRequestError = Errors.BadRequestError;
-    Anthropic2.AuthenticationError = Errors.AuthenticationError;
-    Anthropic2.InternalServerError = Errors.InternalServerError;
-    Anthropic2.PermissionDeniedError = Errors.PermissionDeniedError;
-    Anthropic2.UnprocessableEntityError = Errors.UnprocessableEntityError;
-    Anthropic2.toFile = Uploads.toFile;
-    Anthropic2.fileFromPath = Uploads.fileFromPath;
-    Anthropic2.Completions = completions_1.Completions;
-    Anthropic2.Messages = messages_1.Messages;
-    Anthropic2.Models = models_1.Models;
-    Anthropic2.ModelInfosPage = models_1.ModelInfosPage;
-    Anthropic2.Beta = beta_1.Beta;
-    exports2.HUMAN_PROMPT = Anthropic2.HUMAN_PROMPT, exports2.AI_PROMPT = Anthropic2.AI_PROMPT;
+    exports2.Anthropic = Anthropic;
+    _a = Anthropic;
+    Anthropic.Anthropic = _a;
+    Anthropic.HUMAN_PROMPT = "\n\nHuman:";
+    Anthropic.AI_PROMPT = "\n\nAssistant:";
+    Anthropic.DEFAULT_TIMEOUT = 6e5;
+    Anthropic.AnthropicError = Errors.AnthropicError;
+    Anthropic.APIError = Errors.APIError;
+    Anthropic.APIConnectionError = Errors.APIConnectionError;
+    Anthropic.APIConnectionTimeoutError = Errors.APIConnectionTimeoutError;
+    Anthropic.APIUserAbortError = Errors.APIUserAbortError;
+    Anthropic.NotFoundError = Errors.NotFoundError;
+    Anthropic.ConflictError = Errors.ConflictError;
+    Anthropic.RateLimitError = Errors.RateLimitError;
+    Anthropic.BadRequestError = Errors.BadRequestError;
+    Anthropic.AuthenticationError = Errors.AuthenticationError;
+    Anthropic.InternalServerError = Errors.InternalServerError;
+    Anthropic.PermissionDeniedError = Errors.PermissionDeniedError;
+    Anthropic.UnprocessableEntityError = Errors.UnprocessableEntityError;
+    Anthropic.toFile = Uploads.toFile;
+    Anthropic.fileFromPath = Uploads.fileFromPath;
+    Anthropic.Completions = completions_1.Completions;
+    Anthropic.Messages = messages_1.Messages;
+    Anthropic.Models = models_1.Models;
+    Anthropic.ModelInfosPage = models_1.ModelInfosPage;
+    Anthropic.Beta = beta_1.Beta;
+    exports2.HUMAN_PROMPT = Anthropic.HUMAN_PROMPT, exports2.AI_PROMPT = Anthropic.AI_PROMPT;
     var uploads_1 = require_uploads();
     Object.defineProperty(exports2, "toFile", { enumerable: true, get: function() {
       return uploads_1.toFile;
@@ -33955,8 +33955,8 @@ var require_sdk = __commonJS({
     Object.defineProperty(exports2, "UnprocessableEntityError", { enumerable: true, get: function() {
       return error_1.UnprocessableEntityError;
     } });
-    exports2 = module2.exports = Anthropic2;
-    exports2.default = Anthropic2;
+    exports2 = module2.exports = Anthropic;
+    exports2.default = Anthropic;
   }
 });
 
@@ -35575,12 +35575,11 @@ var require_commonjs = __commonJS({
 var require_fileFilter = __commonJS({
   "src/utils/fileFilter.js"(exports2, module2) {
     var { minimatch } = require_commonjs();
-    var core2 = require_core();
     function matchesPatterns(filename, includePatterns, excludePatterns) {
       const isIncluded = includePatterns.length === 0 || includePatterns.some((pattern) => minimatch(filename, pattern));
-      core2.debug(`File ${filename} is included: ${isIncluded}`);
+      console.debug(`File ${filename} is included: ${isIncluded}`);
       const isExcluded = excludePatterns.some((pattern) => minimatch(filename, pattern));
-      core2.debug(`File ${filename} is excluded: ${isExcluded}`);
+      console.debug(`File ${filename} is excluded: ${isExcluded}`);
       return isIncluded && !isExcluded;
     }
     function hasSignificantChanges(file) {
@@ -35589,7 +35588,7 @@ var require_fileFilter = __commonJS({
       }
       const MAX_CHANGES = 1e3;
       if (file.changes > MAX_CHANGES) {
-        core2.warning(`File ${file.filename} has too many changes (${file.changes}). Skipping.`);
+        console.error(`File ${file.filename} has too many changes (${file.changes}). Skipping.`);
         return false;
       }
       if (file.status === "renamed" && file.changes === 0) {
@@ -35597,29 +35596,29 @@ var require_fileFilter = __commonJS({
       }
       return true;
     }
-    function filterFiles2(files, options) {
+    function filterFiles(files, options) {
       const { includePatterns = [], excludePatterns = [], maxFiles = 10 } = options;
-      core2.debug(`Filtering ${files.length} files`);
-      core2.debug(`Include patterns: ${includePatterns.join(", ")}`);
-      core2.debug(`Exclude patterns: ${excludePatterns.join(", ")}`);
+      console.debug(`Filtering ${files.length} files`);
+      console.debug(`Include patterns: ${includePatterns.join(", ")}`);
+      console.debug(`Exclude patterns: ${excludePatterns.join(", ")}`);
       const filteredFiles = files.filter((file) => {
-        core2.debug(`Analyzing file: ${file.filename}`);
+        console.debug(`Analyzing file: ${file.filename}`);
         const shouldAnalyze = matchesPatterns(file.filename, includePatterns, excludePatterns) && hasSignificantChanges(file);
         if (!shouldAnalyze) {
-          core2.debug(`Skipping ${file.filename}`);
+          console.debug(`Skipping ${file.filename}`);
         }
         return shouldAnalyze;
       }).sort((a, b) => {
         return b.changes - a.changes;
       }).slice(0, maxFiles);
-      core2.info(`Selected ${filteredFiles.length} files for analysis`);
+      console.log(`Selected ${filteredFiles.length} files for analysis`);
       filteredFiles.forEach((file) => {
-        core2.debug(`Will analyze: ${file.filename} (${file.changes} changes)`);
+        console.debug(`Will analyze: ${file.filename} (${file.changes} changes)`);
       });
       return filteredFiles;
     }
     module2.exports = {
-      filterFiles: filterFiles2,
+      filterFiles,
       matchesPatterns,
       hasSignificantChanges
     };
@@ -35629,7 +35628,6 @@ var require_fileFilter = __commonJS({
 // src/analyzer.js
 var require_analyzer = __commonJS({
   "src/analyzer.js"(exports2, module2) {
-    var core2 = require_core();
     function createAnalysisPrompt(filename, content, analysisLevel = "standard") {
       const prompts = {
         basic: `Please analyze this code change and provide basic feedback:
@@ -35681,7 +35679,7 @@ ${analysis}
 ---
 *Generated using Claude AI - Review and validate all suggestions*`;
     }
-    async function analyzeFile2(anthropic, file, options = {}) {
+    async function analyzeFile(anthropic, file, options = {}) {
       const {
         analysisLevel = "standard",
         model = "claude-3-5-haiku-20241022",
@@ -35707,91 +35705,170 @@ ${analysis}
         confidenceScore += confidenceIndicators.low.filter((indicator) => responseText.includes(indicator)).length * 0.1;
         const normalizedScore = Math.min(confidenceScore, 1);
         if (normalizedScore < commentThreshold) {
-          core2.debug(`Analysis confidence (${normalizedScore}) below threshold (${commentThreshold}). Skipping comment.`);
+          console.debug(
+            `Analysis confidence (${normalizedScore}) below threshold (${commentThreshold}). Skipping comment.`
+          );
           return null;
         }
-        core2.debug(`Analysis confidence: ${normalizedScore}, proceeding with comment.`);
+        console.debug(`Analysis confidence: ${normalizedScore}, proceeding with comment.`);
         return formatAnalysisComment(file.filename, response.content[0].text);
       } catch (error) {
-        core2.warning(`Error analyzing ${file.filename}: ${error.message}`);
+        console.error(`Error analyzing ${file.filename}: ${error.message}`);
         throw error;
       }
     }
     module2.exports = {
-      analyzeFile: analyzeFile2,
+      analyzeFile,
       createAnalysisPrompt,
       formatAnalysisComment
     };
   }
 });
 
-// src/index.js
-var core = require_core();
-var github = require_github();
-var Anthropic = require_sdk();
-var { filterFiles } = require_fileFilter();
-var { analyzeFile } = require_analyzer();
-async function run() {
-  try {
-    const anthropicApiKey = core.getInput("anthropic_api_key", { required: true });
-    const githubToken = core.getInput("github_token", { required: true });
-    const analysisLevel = core.getInput("analysis_level");
-    const model = core.getInput("model");
-    const commentThreshold = parseFloat(core.getInput("comment_threshold"));
-    const anthropic = new Anthropic({
-      apiKey: anthropicApiKey
-    });
-    const context = github.context;
-    if (context.payload.pull_request == null) {
-      core.setFailed("This action can only be run on pull request events");
-      return;
+// src/config.js
+var require_config = __commonJS({
+  "src/config.js"(exports2, module2) {
+    var core2 = require_core();
+    var defaultConfig = {
+      model: "claude-3-5-haiku-20241022",
+      analysisLevel: "standard",
+      commentThreshold: 0.7,
+      maxFiles: 10,
+      filePatterns: ["**/*.{js,jsx,ts,tsx,py,java,rb,go,rs}"],
+      excludePatterns: ["**/node_modules/**", "**/dist/**", "**/build/**"]
+    };
+    function getConfigFromInputs() {
+      return {
+        anthropicApiKey: core2.getInput("anthropic_api_key", { required: true }),
+        githubToken: core2.getInput("github_token", { required: true }),
+        analysisLevel: core2.getInput("analysis_level") || defaultConfig.analysisLevel,
+        model: core2.getInput("model") || defaultConfig.model,
+        commentThreshold: parseFloat(core2.getInput("comment_threshold")) || defaultConfig.commentThreshold,
+        filePatterns: core2.getInput("file_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.filePatterns,
+        excludePatterns: core2.getInput("exclude_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.excludePatterns,
+        maxFiles: parseInt(core2.getInput("max_files"), 10) || defaultConfig.maxFiles
+      };
     }
-    const octokit = github.getOctokit(githubToken);
-    const prNumber = context.payload.pull_request.number;
-    const repo = context.repo;
-    const { data: files } = await octokit.rest.pulls.listFiles({
-      ...repo,
-      pull_number: prNumber
-    });
-    const filePatterns = core.getInput("file_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean);
-    const excludePatterns = core.getInput("exclude_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean);
-    const maxFiles = parseInt(core.getInput("max_files"), 10);
-    const relevantFiles = filterFiles(files, {
-      includePatterns: filePatterns,
-      excludePatterns,
-      maxFiles
-    });
-    for (const file of relevantFiles) {
+    module2.exports = {
+      defaultConfig,
+      getConfigFromInputs
+    };
+  }
+});
+
+// src/index.js
+var require_index = __commonJS({
+  "src/index.js"(exports2, module2) {
+    var core2 = require_core();
+    var github = require_github();
+    var Anthropic = require_sdk();
+    var fs = require("fs/promises");
+    var { filterFiles } = require_fileFilter();
+    var { analyzeFile } = require_analyzer();
+    var { getConfigFromInputs } = require_config();
+    async function analyzeGitHubPR(config) {
       try {
-        const { data: fileContent } = await octokit.rest.repos.getContent({
-          ...repo,
-          path: file.filename,
-          ref: context.payload.pull_request.head.sha
-        });
-        const fileData = {
-          filename: file.filename,
-          content: Buffer.from(fileContent.content, "base64").toString()
-        };
-        const analysisComment = await analyzeFile(anthropic, fileData, {
+        const {
+          anthropicApiKey,
+          githubToken,
           analysisLevel,
           model,
-          commentThreshold
+          commentThreshold,
+          filePatterns,
+          excludePatterns,
+          maxFiles,
+          prNumber,
+          repo: repoFullName,
+          output
+        } = config;
+        const anthropic = new Anthropic({ apiKey: anthropicApiKey });
+        const octokit = github.getOctokit(githubToken);
+        const [owner, repo] = repoFullName.split("/");
+        const { data: files } = await octokit.rest.pulls.listFiles({
+          owner,
+          repo,
+          pull_number: prNumber
         });
-        if (analysisComment) {
-          await octokit.rest.issues.createComment({
-            ...repo,
-            issue_number: prNumber,
-            body: analysisComment
-          });
-        } else {
-          core.info(`Skipping comment for ${file.filename} - below confidence threshold`);
+        const relevantFiles = filterFiles(files, {
+          includePatterns: filePatterns,
+          excludePatterns,
+          maxFiles
+        });
+        const analysisResults = [];
+        for (const file of relevantFiles) {
+          try {
+            const { data: fileContent } = await octokit.rest.repos.getContent({
+              owner,
+              repo,
+              path: file.filename,
+              ref: github.context.payload?.pull_request?.head?.sha
+            });
+            const fileData = {
+              filename: file.filename,
+              content: Buffer.from(fileContent.content, "base64").toString()
+            };
+            const analysisComment = await analyzeFile(anthropic, fileData, {
+              analysisLevel,
+              model,
+              commentThreshold
+            });
+            if (analysisComment) {
+              if (process.env.GITHUB_ACTIONS) {
+                await octokit.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  body: analysisComment
+                });
+              }
+              analysisResults.push(analysisComment);
+            }
+            console.log(`Analyzed ${file.filename}`);
+          } catch (error) {
+            console.warning(`Error processing file ${file.filename}: ${error.message}`);
+          }
         }
+        if (output) {
+          console.log("Printing analysis results");
+          const timestamp = (/* @__PURE__ */ new Date()).toISOString();
+          const markdown = `# AI Pull Request Analysis
+Generated on: ${timestamp}
+PR: ${repoFullName}#${prNumber}
+
+${analysisResults.join("\n\n---\n\n")}
+`;
+          await fs.writeFile(output, markdown, "utf8");
+          core2.info(`Analysis written to ${output}`);
+        }
+        return analysisResults;
       } catch (error) {
-        core.warning(`Error processing file ${file.filename}: ${error.message}`);
+        console.error(error.message);
+        throw error;
       }
     }
-  } catch (error) {
-    core.setFailed(error.message);
+    async function run2() {
+      try {
+        const config = getConfigFromInputs();
+        await analyzeGitHubPR(config);
+      } catch (error) {
+        core2.setFailed(error.message);
+      }
+    }
+    module2.exports = {
+      analyzeGitHubPR,
+      run: run2
+    };
   }
-}
-run();
+});
+
+// src/gha.js
+var core = require_core();
+var { run } = require_index();
+run().then(() => {
+  console.log("Analysis complete");
+  process.exit(0);
+}).catch((error) => {
+  console.error("Error:", error.message);
+  core.setFailed(error.message);
+  process.exit(1);
+});

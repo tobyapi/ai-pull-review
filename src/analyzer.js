@@ -1,5 +1,3 @@
-const core = require('@actions/core');
-
 /**
  * Creates the analysis prompt for Claude
  * @param {string} filename - The name of the file
@@ -118,15 +116,17 @@ async function analyzeFile(anthropic, file, options = {}) {
     const normalizedScore = Math.min(confidenceScore, 1);
 
     if (normalizedScore < commentThreshold) {
-      core.debug(`Analysis confidence (${normalizedScore}) below threshold (${commentThreshold}). Skipping comment.`);
+      console.debug(
+        `Analysis confidence (${normalizedScore}) below threshold (${commentThreshold}). Skipping comment.`,
+      );
       return null;
     }
 
-    core.debug(`Analysis confidence: ${normalizedScore}, proceeding with comment.`);
+    console.debug(`Analysis confidence: ${normalizedScore}, proceeding with comment.`);
 
     return formatAnalysisComment(file.filename, response.content[0].text);
   } catch (error) {
-    core.warning(`Error analyzing ${file.filename}: ${error.message}`);
+    console.error(`Error analyzing ${file.filename}: ${error.message}`);
     throw error;
   }
 }

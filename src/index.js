@@ -1,73 +1,60 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const Anthropic = require('@anthropic-ai/sdk');
+const fs = require('fs/promises');
 const { filterFiles } = require('./utils/fileFilter');
 const { analyzeFile } = require('./analyzer');
+const { getConfigFromInputs } = require('./config');
 
-async function run() {
+async function analyzeGitHubPR(config) {
   try {
-    // Get inputs from action.yml
-    const anthropicApiKey = core.getInput('anthropic_api_key', { required: true });
-    const githubToken = core.getInput('github_token', { required: true });
-    const analysisLevel = core.getInput('analysis_level');
-    const model = core.getInput('model');
-    const commentThreshold = parseFloat(core.getInput('comment_threshold'));
+    const {
+      anthropicApiKey,
+      githubToken,
+      analysisLevel,
+      model,
+      commentThreshold,
+      filePatterns,
+      excludePatterns,
+      maxFiles,
+      prNumber,
+      repo: repoFullName,
+      output,
+    } = config;
 
-    // Initialize Anthropic client
-    const anthropic = new Anthropic({
-      apiKey: anthropicApiKey,
-    });
-
-    // Get the pull request context
-    const context = github.context;
-    if (context.payload.pull_request == null) {
-      core.setFailed('This action can only be run on pull request events');
-      return;
-    }
-
-    // Initialize Octokit
+    // Initialize clients
+    const anthropic = new Anthropic({ apiKey: anthropicApiKey });
     const octokit = github.getOctokit(githubToken);
 
-    // Get PR details
-    const prNumber = context.payload.pull_request.number;
-    const repo = context.repo;
+    // Parse repo owner and name
+    const [owner, repo] = repoFullName.split('/');
 
-    // Get PR changes
+    // Get PR files
     const { data: files } = await octokit.rest.pulls.listFiles({
-      ...repo,
+      owner,
+      repo,
       pull_number: prNumber,
     });
 
-    // Get filter patterns from inputs
-    const filePatterns = core
-      .getInput('file_patterns')
-      .split(',')
-      .map((pattern) => pattern.trim())
-      .filter(Boolean);
-
-    const excludePatterns = core
-      .getInput('exclude_patterns')
-      .split(',')
-      .map((pattern) => pattern.trim())
-      .filter(Boolean);
-
-    const maxFiles = parseInt(core.getInput('max_files'), 10);
-
-    // Filter files using our utility
+    // Filter files
     const relevantFiles = filterFiles(files, {
       includePatterns: filePatterns,
       excludePatterns: excludePatterns,
       maxFiles,
     });
 
+    // Store all analysis results
+    const analysisResults = [];
+
     // Analyze each file
     for (const file of relevantFiles) {
       try {
         // Get file content
         const { data: fileContent } = await octokit.rest.repos.getContent({
-          ...repo,
+          owner,
+          repo,
           path: file.filename,
-          ref: context.payload.pull_request.head.sha,
+          ref: github.context.payload?.pull_request?.head?.sha,
         });
 
         // Prepare file for analysis
@@ -83,23 +70,60 @@ async function run() {
           commentThreshold,
         });
 
-        // Only post comment if it meets the threshold
         if (analysisComment) {
-          await octokit.rest.issues.createComment({
-            ...repo,
-            issue_number: prNumber,
-            body: analysisComment,
-          });
-        } else {
-          core.info(`Skipping comment for ${file.filename} - below confidence threshold`);
+          // If we're in a GitHub Action, post comment
+          if (process.env.GITHUB_ACTIONS) {
+            await octokit.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: prNumber,
+              body: analysisComment,
+            });
+          }
+
+          // Store analysis for output file
+          analysisResults.push(analysisComment);
         }
+
+        console.log(`Analyzed ${file.filename}`);
       } catch (error) {
-        core.warning(`Error processing file ${file.filename}: ${error.message}`);
+        console.warning(`Error processing file ${file.filename}: ${error.message}`);
       }
     }
+
+    // Write results to output file if specified
+    if (output) {
+      console.log('Printing analysis results');
+      const timestamp = new Date().toISOString();
+      const markdown = `# AI Pull Request Analysis
+Generated on: ${timestamp}  
+PR: ${repoFullName}#${prNumber}  
+
+${analysisResults.join('\n\n---\n\n')}
+`;
+
+      await fs.writeFile(output, markdown, 'utf8');
+      core.info(`Analysis written to ${output}`);
+    }
+
+    return analysisResults;
+  } catch (error) {
+    console.error(error.message);
+    throw error;
+  }
+}
+
+// For GitHub Action
+async function run() {
+  try {
+    const config = getConfigFromInputs();
+    await analyzeGitHubPR(config);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
-run();
+module.exports = {
+  analyzeGitHubPR,
+  run,
+};

@@ -1,6 +1,9 @@
 # Artifacts
 artifacts
 
+# Outputs
+results.md
+
 # Logs
 logs
 *.log

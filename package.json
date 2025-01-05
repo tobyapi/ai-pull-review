@@ -1,25 +1,22 @@
 {
-  "name": "ai-pull-review",
+  "name": "ai-pull-review-cli",
   "version": "1.0.0",
   "description": "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
-  "main": "dist/index.js",
+  "author": "Diego Maroto",
+  "license": "MIT",
+  "main": "src/cli.js",
   "scripts": {
     "test": "jest",
     "prepare": "husky",
+    "start": "node src/cli.js",
     "pretty": "prettier --write .",
-    "build": "esbuild src/index.js --bundle --platform=node --legal-comments=none --outfile=dist/bundle.js"
+    "gha": "esbuild src/gha.js --bundle --platform=node --legal-comments=none --outfile=dist/gha.js",
+    "cli": "esbuild src/cli.js --bundle --platform=node --legal-comments=none --outfile=bin/cli.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/diekotto/ai-pull-review.git"
   },
-  "keywords": [
-    "AI",
-    "PR",
-    "GHA"
-  ],
-  "author": "Diego Maroto",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/diekotto/ai-pull-review/issues"
   },
@@ -34,10 +31,29 @@
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   },
+  "bin": {
+    "ai-pull-review": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "AI",
+    "PR",
+    "GHA",
+    "cli",
+    "code-review",
+    "github-action"
+  ],
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
     "@anthropic-ai/sdk": "^0.33.1",
+    "commander": "^13.0.0",
+    "dotenv": "^16.4.7",
     "minimatch": "^10.0.1"
   }
 }
