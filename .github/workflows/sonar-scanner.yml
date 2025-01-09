@@ -1,6 +1,7 @@
 name: Code Analysis Example
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
