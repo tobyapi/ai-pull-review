@@ -138,6 +138,8 @@ class AnthropicBatchManager {
   getModelCost(model) {
     // https://docs.anthropic.com/en/docs/about-claude/models
     switch (model) {
+      case 'claude-3-7-sonnet-20250219':
+        return { input: 3.0, output: 15.0 };
       case 'claude-3-5-sonnet-20241022':
         return { input: 3.0, output: 15.0 };
       case 'claude-3-5-haiku-20241022':
