@@ -1,0 +1,93 @@
+name: Github Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build CLI
+        run: npm run cli
+
+      - name: Build GHA
+        run: npm run gha
+
+      - name: Get version from package.json
+        id: package-version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+
+      - name: Config git
+        id: config_git
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+
+      - name: Create Release
+        id: create_release
+        run: |
+          # Create a release notes file
+          cat > release_notes.md << EOF
+          AI PULL REVIEW v${{ steps.package-version.outputs.VERSION }}
+
+          ## What's Changed
+          * Automated release from the release branch
+
+          For full changelog, please see the commit history.
+          EOF
+
+          # Create a tag
+          git tag -a v${{ steps.package-version.outputs.VERSION }} -m "Release v${{ steps.package-version.outputs.VERSION }}"
+          git push origin v${{ steps.package-version.outputs.VERSION }}
+
+          # Create the release using GitHub CLI
+          gh release create v${{ steps.package-version.outputs.VERSION }} \
+            --title "Release v${{ steps.package-version.outputs.VERSION }}" \
+            --notes-file release_notes.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update major version tag
+        run: |
+          MAJOR_VERSION=$(echo ${{ steps.package-version.outputs.VERSION }} | cut -d. -f1)
+          git tag -f v${MAJOR_VERSION}
+          git push -f origin v${MAJOR_VERSION}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  publish_packages:
+    runs-on: ubuntu-latest
+    needs: [build-and-release]
+    strategy:
+      matrix:
+        package:
+          - registry: 'https://npm.pkg.github.com'
+            name: 'npm.pkg.github.com'
+            github_token: true
+          - registry: 'https://registry.npmjs.org'
+            name: 'registry.npmjs.org'
+            github_token: false
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trigger ${{ matrix.package.name }} Workflow
+        uses: ./.github/actions/publish-npm-package
+        with:
+          registry-url: ${{ matrix.package.registry }}
+          npm-token: ${{ matrix.package.github_token == true && secrets.GITHUB_TOKEN || secrets.NPM_TOKEN }}

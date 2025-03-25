@@ -1,6 +1,6 @@
 {
   "name": "@diekotto/ai-pull-review-cli",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
   "author": "Diego Maroto",
   "license": "MIT",
@@ -39,7 +39,6 @@
     "ai-pull-review-cli": "./bin/cli.js"
   },
   "files": [
-    "dist",
     "bin",
     "action.yml",
     "README.md",

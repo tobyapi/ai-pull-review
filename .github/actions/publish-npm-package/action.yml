@@ -1,0 +1,36 @@
+name: 'Publish NPM Package'
+description: 'A composite action to publish a NPM package choosing the registry'
+
+inputs:
+  registry-url:
+    description: 'Package registry URL'
+    required: true
+  npm-token:
+    description: 'NPM token for authentication'
+    required: true
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22'
+  access:
+    description: 'Access level for publishing the package'
+    required: false
+    default: 'public'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        registry-url: ${{ inputs.registry-url }}
+
+    - name: Publish to NPM
+      run: npm publish --access ${{ inputs.access }}
+      shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}

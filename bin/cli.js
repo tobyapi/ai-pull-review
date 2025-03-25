@@ -37932,6 +37932,8 @@ var require_anthropic = __commonJS({
       }
       getModelCost(model) {
         switch (model) {
+          case "claude-3-7-sonnet-20250219":
+            return { input: 3, output: 15 };
           case "claude-3-5-sonnet-20241022":
             return { input: 3, output: 15 };
           case "claude-3-5-haiku-20241022":
@@ -38138,7 +38140,7 @@ var require_package2 = __commonJS({
   "package.json"(exports2, module2) {
     module2.exports = {
       name: "@diekotto/ai-pull-review-cli",
-      version: "2.0.1",
+      version: "2.1.0",
       description: "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
       author: "Diego Maroto",
       license: "MIT",
@@ -38177,7 +38179,6 @@ var require_package2 = __commonJS({
         "ai-pull-review-cli": "./bin/cli.js"
       },
       files: [
-        "dist",
         "bin",
         "action.yml",
         "README.md",
