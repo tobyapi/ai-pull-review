@@ -38140,7 +38140,7 @@ var require_package2 = __commonJS({
   "package.json"(exports2, module2) {
     module2.exports = {
       name: "@diekotto/ai-pull-review-cli",
-      version: "2.2.0",
+      version: "2.3.0",
       description: "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
       author: "Diego Maroto",
       license: "MIT",
