@@ -36455,6 +36455,8 @@ var require_anthropic = __commonJS({
       }
       getModelCost(model) {
         switch (model) {
+          case "claude-3-7-sonnet-20250219":
+            return { input: 3, output: 15 };
           case "claude-3-5-sonnet-20241022":
             return { input: 3, output: 15 };
           case "claude-3-5-haiku-20241022":
