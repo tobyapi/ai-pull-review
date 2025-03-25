@@ -29,6 +29,14 @@ runs:
         node-version: ${{ inputs.node-version }}
         registry-url: ${{ inputs.registry-url }}
 
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
+
+    - name: Make bin file executable
+      run: chmod +x bin/cli.js
+      shell: bash
+
     - name: Publish to NPM
       run: npm publish --access ${{ inputs.access }}
       shell: bash
