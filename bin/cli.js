@@ -38140,7 +38140,7 @@ var require_package2 = __commonJS({
   "package.json"(exports2, module2) {
     module2.exports = {
       name: "@diekotto/ai-pull-review-cli",
-      version: "2.1.0",
+      version: "2.2.0",
       description: "A GitHub Action that leverages Anthropic's Claude AI to provide intelligent analysis and review of pull requests.",
       author: "Diego Maroto",
       license: "MIT",
@@ -38154,6 +38154,7 @@ var require_package2 = __commonJS({
         prepare: "husky",
         start: "node src/cli.js",
         pretty: "prettier --write .",
+        build: "npm run gha && npm run cli",
         gha: "esbuild src/gha.js --bundle --platform=node --target=node22 --legal-comments=none --outfile=dist/gha.js",
         cli: "esbuild src/cli.js --bundle --platform=node --target=node22 --legal-comments=none --outfile=bin/cli.js"
       },
