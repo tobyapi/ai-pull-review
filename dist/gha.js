@@ -735,11 +735,11 @@ var require_errors = __commonJS({
       }
     };
     var HTTPParserError = class _HTTPParserError extends Error {
-      constructor(message, code, data) {
+      constructor(message, code2, data) {
         super(message);
         Error.captureStackTrace(this, _HTTPParserError);
         this.name = "HTTPParserError";
-        this.code = code ? `HPE_${code}` : void 0;
+        this.code = code2 ? `HPE_${code2}` : void 0;
         this.data = data ? data.toString() : void 0;
       }
     };
@@ -753,13 +753,13 @@ var require_errors = __commonJS({
       }
     };
     var RequestRetryError = class _RequestRetryError extends UndiciError {
-      constructor(message, code, { headers, data }) {
+      constructor(message, code2, { headers, data }) {
         super(message);
         Error.captureStackTrace(this, _RequestRetryError);
         this.name = "RequestRetryError";
         this.message = message || "Request retry error";
         this.code = "UND_ERR_REQ_RETRY";
-        this.statusCode = code;
+        this.statusCode = code2;
         this.data = data;
         this.headers = headers;
       }
@@ -7175,8 +7175,8 @@ var require_client = __commonJS({
       this[kSocket][kError] = err;
       onError(this[kClient], err);
     }
-    function onHttp2FrameError(type, code, id) {
-      const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
+    function onHttp2FrameError(type, code2, id) {
+      const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code2}`);
       if (id === 0) {
         this[kSocket][kError] = err;
         onError(this[kClient], err);
@@ -7186,9 +7186,9 @@ var require_client = __commonJS({
       util.destroy(this, new SocketError("other side closed"));
       util.destroy(this[kSocket], new SocketError("other side closed"));
     }
-    function onHTTP2GoAway(code) {
+    function onHTTP2GoAway(code2) {
       const client = this[kClient];
-      const err = new InformationalError(`HTTP/2: "GOAWAY" frame received with code ${code}`);
+      const err = new InformationalError(`HTTP/2: "GOAWAY" frame received with code ${code2}`);
       client[kSocket] = null;
       client[kHTTP2Session] = null;
       if (client.destroyed) {
@@ -8177,8 +8177,8 @@ upgrade: ${upgrade}\r
           util.destroy(stream, err);
         }
       });
-      stream.once("frameError", (type, code) => {
-        const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
+      stream.once("frameError", (type, code2) => {
+        const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code2}`);
         errorRequest(client, request, err);
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           h2State.streams -= 1;
@@ -11265,7 +11265,7 @@ var require_RetryHandler = __commonJS({
         if (this.handler.onBodySent) return this.handler.onBodySent(chunk);
       }
       static [kRetryHandlerDefaultRetry](err, { state, opts }, cb) {
-        const { statusCode, code, headers } = err;
+        const { statusCode, code: code2, headers } = err;
         const { method, retryOptions } = opts;
         const {
           maxRetries,
@@ -11278,7 +11278,7 @@ var require_RetryHandler = __commonJS({
         } = retryOptions;
         let { counter, currentTimeout } = state;
         currentTimeout = currentTimeout != null && currentTimeout > 0 ? currentTimeout : timeout;
-        if (code && code !== "UND_ERR_REQ_RETRY" && code !== "UND_ERR_SOCKET" && !errorCodes.includes(code)) {
+        if (code2 && code2 !== "UND_ERR_REQ_RETRY" && code2 !== "UND_ERR_SOCKET" && !errorCodes.includes(code2)) {
           cb(err);
           return;
         }
@@ -11519,8 +11519,8 @@ var require_headers = __commonJS({
     var assert = require("assert");
     var kHeadersMap = Symbol("headers map");
     var kHeadersSortedMap = Symbol("headers map sorted");
-    function isHTTPWhiteSpaceCharCode(code) {
-      return code === 10 || code === 13 || code === 9 || code === 32;
+    function isHTTPWhiteSpaceCharCode(code2) {
+      return code2 === 10 || code2 === 13 || code2 === 9 || code2 === 32;
     }
     function headerValueNormalize(potentialValue) {
       let i = 0;
@@ -15462,33 +15462,33 @@ var require_util6 = __commonJS({
         return false;
       }
       for (const char of value) {
-        const code = char.charCodeAt(0);
-        if (code >= 0 || code <= 8 || (code >= 10 || code <= 31) || code === 127) {
+        const code2 = char.charCodeAt(0);
+        if (code2 >= 0 || code2 <= 8 || (code2 >= 10 || code2 <= 31) || code2 === 127) {
           return false;
         }
       }
     }
     function validateCookieName(name) {
       for (const char of name) {
-        const code = char.charCodeAt(0);
-        if (code <= 32 || code > 127 || char === "(" || char === ")" || char === ">" || char === "<" || char === "@" || char === "," || char === ";" || char === ":" || char === "\\" || char === '"' || char === "/" || char === "[" || char === "]" || char === "?" || char === "=" || char === "{" || char === "}") {
+        const code2 = char.charCodeAt(0);
+        if (code2 <= 32 || code2 > 127 || char === "(" || char === ")" || char === ">" || char === "<" || char === "@" || char === "," || char === ";" || char === ":" || char === "\\" || char === '"' || char === "/" || char === "[" || char === "]" || char === "?" || char === "=" || char === "{" || char === "}") {
           throw new Error("Invalid cookie name");
         }
       }
     }
     function validateCookieValue(value) {
       for (const char of value) {
-        const code = char.charCodeAt(0);
-        if (code < 33 || // exclude CTLs (0-31)
-        code === 34 || code === 44 || code === 59 || code === 92 || code > 126) {
+        const code2 = char.charCodeAt(0);
+        if (code2 < 33 || // exclude CTLs (0-31)
+        code2 === 34 || code2 === 44 || code2 === 59 || code2 === 92 || code2 > 126) {
           throw new Error("Invalid header value");
         }
       }
     }
     function validateCookiePath(path) {
       for (const char of path) {
-        const code = char.charCodeAt(0);
-        if (code < 33 || char === ";") {
+        const code2 = char.charCodeAt(0);
+        if (code2 < 33 || char === ";") {
           throw new Error("Invalid cookie path");
         }
       }
@@ -16231,21 +16231,21 @@ var require_util7 = __commonJS({
         return false;
       }
       for (const char of protocol) {
-        const code = char.charCodeAt(0);
-        if (code < 33 || code > 126 || char === "(" || char === ")" || char === "<" || char === ">" || char === "@" || char === "," || char === ";" || char === ":" || char === "\\" || char === '"' || char === "/" || char === "[" || char === "]" || char === "?" || char === "=" || char === "{" || char === "}" || code === 32 || // SP
-        code === 9) {
+        const code2 = char.charCodeAt(0);
+        if (code2 < 33 || code2 > 126 || char === "(" || char === ")" || char === "<" || char === ">" || char === "@" || char === "," || char === ";" || char === ":" || char === "\\" || char === '"' || char === "/" || char === "[" || char === "]" || char === "?" || char === "=" || char === "{" || char === "}" || code2 === 32 || // SP
+        code2 === 9) {
           return false;
         }
       }
       return true;
     }
-    function isValidStatusCode(code) {
-      if (code >= 1e3 && code < 1015) {
-        return code !== 1004 && // reserved
-        code !== 1005 && // "MUST NOT be set as a status code"
-        code !== 1006;
+    function isValidStatusCode(code2) {
+      if (code2 >= 1e3 && code2 < 1015) {
+        return code2 !== 1004 && // reserved
+        code2 !== 1005 && // "MUST NOT be set as a status code"
+        code2 !== 1006;
       }
-      return code >= 3e3 && code <= 4999;
+      return code2 >= 3e3 && code2 <= 4999;
     }
     function failWebsocketConnection(ws, reason) {
       const { [kController]: controller, [kResponse]: response } = ws;
@@ -16383,25 +16383,25 @@ var require_connection = __commonJS({
     function onSocketClose() {
       const { ws } = this;
       const wasClean = ws[kSentClose] && ws[kReceivedClose];
-      let code = 1005;
+      let code2 = 1005;
       let reason = "";
       const result = ws[kByteParser].closingInfo;
       if (result) {
-        code = result.code ?? 1005;
+        code2 = result.code ?? 1005;
         reason = result.reason;
       } else if (!ws[kSentClose]) {
-        code = 1006;
+        code2 = 1006;
       }
       ws[kReadyState] = states.CLOSED;
       fireEvent("close", ws, CloseEvent, {
         wasClean,
-        code,
+        code: code2,
         reason
       });
       if (channels.close.hasSubscribers) {
         channels.close.publish({
           websocket: ws,
-          code,
+          code: code2,
           reason
         });
       }
@@ -16679,21 +16679,21 @@ var require_receiver = __commonJS({
         return buffer;
       }
       parseCloseBody(onlyCode, data) {
-        let code;
+        let code2;
         if (data.length >= 2) {
-          code = data.readUInt16BE(0);
+          code2 = data.readUInt16BE(0);
         }
         if (onlyCode) {
-          if (!isValidStatusCode(code)) {
+          if (!isValidStatusCode(code2)) {
             return null;
           }
-          return { code };
+          return { code: code2 };
         }
         let reason = data.subarray(2);
         if (reason[0] === 239 && reason[1] === 187 && reason[2] === 191) {
           reason = reason.subarray(3);
         }
-        if (code !== void 0 && !isValidStatusCode(code)) {
+        if (code2 !== void 0 && !isValidStatusCode(code2)) {
           return null;
         }
         try {
@@ -16701,7 +16701,7 @@ var require_receiver = __commonJS({
         } catch {
           return null;
         }
-        return { code, reason };
+        return { code: code2, reason };
       }
       get closingInfo() {
         return this.#info.closeInfo;
@@ -16811,16 +16811,16 @@ var require_websocket = __commonJS({
        * @param {number|undefined} code
        * @param {string|undefined} reason
        */
-      close(code = void 0, reason = void 0) {
+      close(code2 = void 0, reason = void 0) {
         webidl.brandCheck(this, _WebSocket);
-        if (code !== void 0) {
-          code = webidl.converters["unsigned short"](code, { clamp: true });
+        if (code2 !== void 0) {
+          code2 = webidl.converters["unsigned short"](code2, { clamp: true });
         }
         if (reason !== void 0) {
           reason = webidl.converters.USVString(reason);
         }
-        if (code !== void 0) {
-          if (code !== 1e3 && (code < 3e3 || code > 4999)) {
+        if (code2 !== void 0) {
+          if (code2 !== 1e3 && (code2 < 3e3 || code2 > 4999)) {
             throw new DOMException2("invalid code", "InvalidAccessError");
           }
         }
@@ -16840,12 +16840,12 @@ var require_websocket = __commonJS({
           this[kReadyState] = _WebSocket.CLOSING;
         } else if (!isClosing(this)) {
           const frame = new WebsocketFrameSend();
-          if (code !== void 0 && reason === void 0) {
+          if (code2 !== void 0 && reason === void 0) {
             frame.frameData = Buffer.allocUnsafe(2);
-            frame.frameData.writeUInt16BE(code, 0);
-          } else if (code !== void 0 && reason !== void 0) {
+            frame.frameData.writeUInt16BE(code2, 0);
+          } else if (code2 !== void 0 && reason !== void 0) {
             frame.frameData = Buffer.allocUnsafe(2 + reasonByteLength);
-            frame.frameData.writeUInt16BE(code, 0);
+            frame.frameData.writeUInt16BE(code2, 0);
             frame.frameData.write(reason, 2, "utf-8");
           } else {
             frame.frameData = emptyBuffer;
@@ -18239,9 +18239,9 @@ var require_summary = __commonJS({
        *
        * @returns {Summary} summary instance
        */
-      addCodeBlock(code, lang) {
+      addCodeBlock(code2, lang) {
         const attrs = Object.assign({}, lang && { lang });
-        const element = this.wrap("pre", this.wrap("code", code), attrs);
+        const element = this.wrap("pre", this.wrap("code", code2), attrs);
         return this.addRaw(element).addEOL();
       }
       /**
@@ -19178,14 +19178,14 @@ var require_toolrunner = __commonJS({
               state.processClosed = true;
               state.CheckComplete();
             });
-            cp.on("exit", (code) => {
-              state.processExitCode = code;
+            cp.on("exit", (code2) => {
+              state.processExitCode = code2;
               state.processExited = true;
-              this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
+              this._debug(`Exit code ${code2} received from tool '${this.toolPath}'`);
               state.CheckComplete();
             });
-            cp.on("close", (code) => {
-              state.processExitCode = code;
+            cp.on("close", (code2) => {
+              state.processExitCode = code2;
               state.processExited = true;
               state.processClosed = true;
               this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
@@ -23851,6 +23851,7 @@ var require_config = __commonJS({
     var defaultConfig = {
       model: "claude-3-5-haiku-20241022",
       analysisLevel: "standard",
+      language: "English",
       commentThreshold: 0.7,
       maxFiles: 10,
       maxSize: 100,
@@ -23872,6 +23873,7 @@ var require_config = __commonJS({
         anthropicApiKey: core2.getInput("anthropic_api_key", { required: true }),
         githubToken: core2.getInput("github_token", { required: true }),
         analysisLevel: core2.getInput("analysis_level") || defaultConfig.analysisLevel,
+        language: code.getInput("langage") || defaultConfig.language,
         model: core2.getInput("model") || defaultConfig.model,
         filePatterns: core2.getInput("file_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.filePatterns,
         excludePatterns: core2.getInput("exclude_patterns").split(",").map((pattern) => pattern.trim()).filter(Boolean) || defaultConfig.excludePatterns,
@@ -25559,7 +25561,7 @@ var require_fileFilter = __commonJS({
 // src/analyzer.js
 var require_analyzer = __commonJS({
   "src/analyzer.js"(exports2, module2) {
-    function createAnalysisPrompt(filename, content, analysisLevel = "standard") {
+    function createAnalysisPrompt(filename, content, analysisLevel = "standard", language = "English") {
       const prompts = {
         basic: `Please analyze this code change and provide basic feedback:
     
@@ -25567,7 +25569,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Basic style improvements`,
         standard: `Please analyze this code change and provide feedback:
@@ -25576,7 +25578,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Style improvements
     3. Performance considerations
@@ -25588,7 +25590,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide detailed feedback on:
+    In ${language}, please provide detailed feedback on:
     1. Potential bugs, edge cases, and reliability issues
     2. Code style and maintainability improvements
     3. Performance optimizations and scalability considerations
@@ -25611,9 +25613,9 @@ ${analysis}
 *Generated using Claude AI - Review and validate all suggestions*`;
     }
     async function analyzeFile(file, options = {}) {
-      const { analysisLevel = "standard" } = options;
+      const { analysisLevel = "standard", language = "English" } = options;
       try {
-        const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel);
+        const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel, language);
         return prompt;
       } catch (error) {
         console.error(`Error analyzing ${file.filename}: ${error.message}`);
@@ -28677,8 +28679,8 @@ var require_lib3 = __commonJS({
         stream.end();
       }
     }
-    fetch.isRedirect = function(code) {
-      return code === 301 || code === 302 || code === 303 || code === 307 || code === 308;
+    fetch.isRedirect = function(code2) {
+      return code2 === 301 || code2 === 302 || code2 === 303 || code2 === 307 || code2 === 308;
     };
     fetch.Promise = global.Promise;
     module2.exports = exports2 = fetch;

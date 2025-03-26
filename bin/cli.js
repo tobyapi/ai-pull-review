@@ -27036,7 +27036,7 @@ var require_fileFilter = __commonJS({
 // src/analyzer.js
 var require_analyzer = __commonJS({
   "src/analyzer.js"(exports2, module2) {
-    function createAnalysisPrompt(filename, content, analysisLevel = "standard") {
+    function createAnalysisPrompt(filename, content, analysisLevel = "standard", language = "English") {
       const prompts = {
         basic: `Please analyze this code change and provide basic feedback:
     
@@ -27044,7 +27044,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Basic style improvements`,
         standard: `Please analyze this code change and provide feedback:
@@ -27053,7 +27053,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Style improvements
     3. Performance considerations
@@ -27065,7 +27065,7 @@ var require_analyzer = __commonJS({
     Changes:
     ${content}
     
-    Please provide detailed feedback on:
+    In ${language}, please provide detailed feedback on:
     1. Potential bugs, edge cases, and reliability issues
     2. Code style and maintainability improvements
     3. Performance optimizations and scalability considerations
@@ -27088,9 +27088,9 @@ ${analysis}
 *Generated using Claude AI - Review and validate all suggestions*`;
     }
     async function analyzeFile(file, options2 = {}) {
-      const { analysisLevel = "standard" } = options2;
+      const { analysisLevel = "standard", language = "English" } = options2;
       try {
-        const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel);
+        const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel, language);
         return prompt;
       } catch (error) {
         console.error(`Error analyzing ${file.filename}: ${error.message}`);

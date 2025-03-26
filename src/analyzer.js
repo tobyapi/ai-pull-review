@@ -5,7 +5,7 @@
  * @param {string} analysisLevel - The depth of analysis (basic, standard, deep)
  * @returns {string} The formatted prompt
  */
-function createAnalysisPrompt(filename, content, analysisLevel = 'standard') {
+function createAnalysisPrompt(filename, content, analysisLevel = 'standard', language = 'English') {
   const prompts = {
     basic: `Please analyze this code change and provide basic feedback:
     
@@ -13,7 +13,7 @@ function createAnalysisPrompt(filename, content, analysisLevel = 'standard') {
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Basic style improvements`,
 
@@ -23,7 +23,7 @@ function createAnalysisPrompt(filename, content, analysisLevel = 'standard') {
     Changes:
     ${content}
     
-    Please provide:
+    In ${language}, please provide:
     1. Potential issues or bugs
     2. Style improvements
     3. Performance considerations
@@ -36,7 +36,7 @@ function createAnalysisPrompt(filename, content, analysisLevel = 'standard') {
     Changes:
     ${content}
     
-    Please provide detailed feedback on:
+    In ${language}, please provide detailed feedback on:
     1. Potential bugs, edge cases, and reliability issues
     2. Code style and maintainability improvements
     3. Performance optimizations and scalability considerations
@@ -74,10 +74,10 @@ ${analysis}
  * @returns {Promise<string>} Analysis result
  */
 async function analyzeFile(file, options = {}) {
-  const { analysisLevel = 'standard' } = options;
+  const { analysisLevel = 'standard', language = 'English' } = options;
 
   try {
-    const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel);
+    const prompt = createAnalysisPrompt(file.filename, file.content, analysisLevel, language);
     return prompt;
   } catch (error) {
     console.error(`Error analyzing ${file.filename}: ${error.message}`);

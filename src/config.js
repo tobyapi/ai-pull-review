@@ -4,6 +4,7 @@ const github = require('@actions/github');
 const defaultConfig = {
   model: 'claude-3-5-haiku-20241022',
   analysisLevel: 'standard',
+  language: 'English',
   commentThreshold: 0.7,
   maxFiles: 10,
   maxSize: 100,
@@ -27,6 +28,7 @@ function getConfigFromInputs() {
     anthropicApiKey: core.getInput('anthropic_api_key', { required: true }),
     githubToken: core.getInput('github_token', { required: true }),
     analysisLevel: core.getInput('analysis_level') || defaultConfig.analysisLevel,
+    language: code.getInput('langage') || defaultConfig.language,
     model: core.getInput('model') || defaultConfig.model,
     filePatterns:
       core
